@@ -1,56 +1,27 @@
 package com.microsoft.msftbreweryworkshop.service
 
 import com.microsoft.msftbreweryworkshop.api.BeerApi
-import com.microsoft.msftbreweryworkshop.api.model.BeerDetail
-import com.microsoft.msftbreweryworkshop.api.model.BeerItem
-import com.microsoft.msftbreweryworkshop.api.model.DetailResponse
-import com.microsoft.msftbreweryworkshop.api.model.ListResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.microsoft.msftbreweryworkshop.ext.toBeer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 
 class BeerServiceImpl(private val beerApi: BeerApi) : BeerService {
-    override fun getBeerList(listener: ServiceListener<ListResponse<BeerItem>>) {
-        beerApi.getBeers().enqueue(object : Callback<ListResponse<BeerItem>> {
-            override fun onFailure(call: Call<ListResponse<BeerItem>>, t: Throwable) {
-                listener.onFailure(t.localizedMessage)
-            }
 
-            override fun onResponse(
-                call: Call<ListResponse<BeerItem>>,
-                response: Response<ListResponse<BeerItem>>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        listener.onSuccess(it)
-                    }
-                } else {
-                    listener.onFailure(response.message())
-                }
-            }
+    override fun getBeerList() = CoroutineScope(Dispatchers.Default).async(start = CoroutineStart.LAZY) {
+        val response = beerApi.getBeers()
+        val beerListData = response.body()?.data ?: throw IllegalStateException("List doesn't exists")
 
-        })
+        beerListData.map {
+            it.toBeer()
+        }
     }
 
-    override fun getBeer(id: String, listener: ServiceListener<DetailResponse<BeerDetail>>) {
-        beerApi.getBeer(id).enqueue(object : Callback<DetailResponse<BeerDetail>> {
-            override fun onFailure(call: Call<DetailResponse<BeerDetail>>, t: Throwable) {
-                listener.onFailure(t.localizedMessage)
-            }
+    override fun getBeer(id: String) = CoroutineScope(Dispatchers.Default).async(start = CoroutineStart.LAZY) {
+        val response = beerApi.getBeer(id)
+        val beerData = response.body()?.data ?: throw IllegalStateException("Detail doesn't exists")
 
-            override fun onResponse(
-                call: Call<DetailResponse<BeerDetail>>,
-                response: Response<DetailResponse<BeerDetail>>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        listener.onSuccess(it)
-                    }
-                } else {
-                    listener.onFailure(response.message())
-                }
-            }
-
-        })
+        beerData.toBeer()
     }
 }

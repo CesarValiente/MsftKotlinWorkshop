@@ -15,12 +15,16 @@ import com.microsoft.msftbreweryworkshop.service.BreweryService
 import com.microsoft.msftbreweryworkshop.service.ServiceListener
 import kotlinx.android.synthetic.main.fragment_brewery_detail.*
 import com.microsoft.msftbreweryworkshop.api.model.BreweryDetail
+import com.microsoft.msftbreweryworkshop.model.Brewery
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_beer_detail.*
 import kotlinx.android.synthetic.main.fragment_brewery_detail.image_medium
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class BreweryDetailFragment : Fragment(),
-    ServiceListener<DetailResponse<BreweryDetail>> {
+class BreweryDetailFragment : Fragment() {
     private val breweryService: BreweryService? by lazy { activity?.app?.provideBreweryService() }
 
     private val breweryId: String
@@ -49,9 +53,7 @@ class BreweryDetailFragment : Fragment(),
         return inflater.inflate(R.layout.fragment_brewery_detail, container, false)
     }
 
-    override fun onSuccess(response: DetailResponse<BreweryDetail>) {
-        val model = response.data.toBrewery()
-
+    private fun onSuccess(model: Brewery) {
         activity?.title = model.name
 
         brewery_name.text = String.format(resources.getString(R.string.brewery_detail_name), model.name)
@@ -74,16 +76,22 @@ class BreweryDetailFragment : Fragment(),
             .into(image_medium)
     }
 
-    override fun onFailure(error: String) {
+    private fun onFailure(error: String) {
         activity?.finish()
         showToast(error)
     }
 
     private fun loadDetail() {
-        //TODO: add spiner
+        CoroutineScope(Dispatchers.Default).launch {
+            val response = breweryService?.getBrewery(breweryId)?.await()
 
-        breweryService?.let {
-            it.getBrewery(breweryId, this)
+            withContext(Dispatchers.Main) {
+                if (response != null) {
+                    onSuccess(response)
+                } else {
+                    onFailure("Detail not found")
+                }
+            }
         }
     }
 }

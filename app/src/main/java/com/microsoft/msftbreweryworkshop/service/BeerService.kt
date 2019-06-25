@@ -1,11 +1,10 @@
 package com.microsoft.msftbreweryworkshop.service
 
-import com.microsoft.msftbreweryworkshop.api.model.BeerDetail
-import com.microsoft.msftbreweryworkshop.api.model.BeerItem
-import com.microsoft.msftbreweryworkshop.api.model.DetailResponse
-import com.microsoft.msftbreweryworkshop.api.model.ListResponse
+import com.microsoft.msftbreweryworkshop.model.Beer
+import com.microsoft.msftbreweryworkshop.model.BeerListItem
+import kotlinx.coroutines.Deferred
 
 interface BeerService {
-    fun getBeerList(listener: ServiceListener<ListResponse<BeerItem>>)
-    fun getBeer(id: String, listener: ServiceListener<DetailResponse<BeerDetail>>)
+    fun getBeerList(): Deferred<List<BeerListItem>>
+    fun getBeer(id: String): Deferred<Beer>
 }

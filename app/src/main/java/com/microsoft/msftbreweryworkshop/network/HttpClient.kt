@@ -1,6 +1,5 @@
 package com.microsoft.msftbreweryworkshop.network
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import okhttp3.Cache
 import okhttp3.OkHttpClient

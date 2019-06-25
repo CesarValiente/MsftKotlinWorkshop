@@ -5,16 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.microsoft.msftbreweryworkshop.R
 import com.microsoft.msftbreweryworkshop.model.BeerListItem
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_beer.view.*
-import org.w3c.dom.Text
 
 class BeersListAdapter(
     context: Context,

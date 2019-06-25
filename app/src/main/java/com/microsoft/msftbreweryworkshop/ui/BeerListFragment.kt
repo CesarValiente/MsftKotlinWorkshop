@@ -17,8 +17,9 @@ import com.microsoft.msftbreweryworkshop.model.BeerListItem
 import com.microsoft.msftbreweryworkshop.model.enums.DetailPageType
 import com.microsoft.msftbreweryworkshop.service.BeerService
 import com.microsoft.msftbreweryworkshop.service.ServiceListener
+import kotlinx.coroutines.*
 
-class BeerListFragment : Fragment(), ListItemHandler<BeerListItem>, ServiceListener<ListResponse<ApiBeer>> {
+class BeerListFragment : Fragment(), ListItemHandler<BeerListItem> {
     private val listAdapter by lazy { BeersListAdapter(context!!, this) }
 
     private lateinit var recyclerView: RecyclerView
@@ -45,22 +46,15 @@ class BeerListFragment : Fragment(), ListItemHandler<BeerListItem>, ServiceListe
         }
     }
 
-    override fun onSuccess(response: ListResponse<ApiBeer>) {
-        listAdapter.items = response.data.map {
-            it.toBeer()
-        }
-        listAdapter.notifyDataSetChanged()
-    }
-
-    override fun onFailure(error: String) {
-        listAdapter.items = emptyList()
-
-        showToast(error)
-    }
-
     private fun loadData() {
-        //TODO: add loading spinner
-        beerService?.getBeerList(this)
+        CoroutineScope(Dispatchers.Default).launch {
+            val beerList = beerService?.getBeerList()?.await()
+
+            withContext(Dispatchers.Main) {
+                listAdapter.items = beerList ?: emptyList()
+                listAdapter.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun setupRecyclerView(view: View) {

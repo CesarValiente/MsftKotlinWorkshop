@@ -1,56 +1,27 @@
 package com.microsoft.msftbreweryworkshop.service
 
 import com.microsoft.msftbreweryworkshop.api.BreweryApi
-import com.microsoft.msftbreweryworkshop.api.model.BreweryDetail
-import com.microsoft.msftbreweryworkshop.api.model.BreweryItem
-import com.microsoft.msftbreweryworkshop.api.model.DetailResponse
-import com.microsoft.msftbreweryworkshop.api.model.ListResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.microsoft.msftbreweryworkshop.ext.toBrewery
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 
 class BreweryServiceImpl(private val breweryApi: BreweryApi) : BreweryService {
-    override fun getBreweries(listener: ServiceListener<ListResponse<BreweryItem>>) {
-        breweryApi.getBreweries().enqueue(object : Callback<ListResponse<BreweryItem>> {
-            override fun onFailure(call: Call<ListResponse<BreweryItem>>, t: Throwable) {
-                listener.onFailure(t.localizedMessage)
-            }
+    override fun getBreweries() = CoroutineScope(Dispatchers.Default).async(start = CoroutineStart.LAZY) {
+        val response = breweryApi.getBreweries()
 
-            override fun onResponse(
-                call: Call<ListResponse<BreweryItem>>,
-                response: Response<ListResponse<BreweryItem>>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        listener.onSuccess(it)
-                    }
-                } else {
-                    listener.onFailure(response.message())
-                }
-            }
+        val breweryListData = response.body()?.data ?: throw IllegalStateException("List doesn't exists")
 
-        })
+        breweryListData.map {
+            it.toBrewery()
+        }
     }
 
-    override fun getBrewery(id: String, listener: ServiceListener<DetailResponse<BreweryDetail>>) {
-        breweryApi.getBrewery(id).enqueue(object : Callback<DetailResponse<BreweryDetail>> {
-            override fun onFailure(call: Call<DetailResponse<BreweryDetail>>, t: Throwable) {
-                listener.onFailure(t.localizedMessage)
-            }
+    override fun getBrewery(id: String) = CoroutineScope(Dispatchers.Default).async(start = CoroutineStart.LAZY) {
+        val response = breweryApi.getBrewery(id)
+        val breweryDetail = response.body()?.data ?: throw IllegalStateException("Detail doesn't exists")
 
-            override fun onResponse(
-                call: Call<DetailResponse<BreweryDetail>>,
-                response: Response<DetailResponse<BreweryDetail>>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        listener.onSuccess(it)
-                    }
-                } else {
-                    listener.onFailure(response.message())
-                }
-            }
-
-        })
+        breweryDetail.toBrewery()
     }
 }

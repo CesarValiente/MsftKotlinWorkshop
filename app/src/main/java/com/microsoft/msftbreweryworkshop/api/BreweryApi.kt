@@ -4,16 +4,18 @@ import com.microsoft.msftbreweryworkshop.api.model.BreweryDetail
 import com.microsoft.msftbreweryworkshop.api.model.BreweryItem
 import com.microsoft.msftbreweryworkshop.api.model.DetailResponse
 import com.microsoft.msftbreweryworkshop.api.model.ListResponse
+import kotlinx.coroutines.Deferred
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface BreweryApi {
     @GET("breweries")
-    fun getBreweries(): Call<ListResponse<BreweryItem>>
+    suspend fun getBreweries(): Response<ListResponse<BreweryItem>>
 
     @GET("brewery/{id}")
-    fun getBrewery(
+    suspend fun getBrewery(
         @Path("id") breweryId: String
-    ): Call<DetailResponse<BreweryDetail>>
+    ): Response<DetailResponse<BreweryDetail>>
 }

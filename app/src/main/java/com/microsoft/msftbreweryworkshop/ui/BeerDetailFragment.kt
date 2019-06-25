@@ -7,18 +7,18 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.microsoft.msftbreweryworkshop.R
-import com.microsoft.msftbreweryworkshop.api.model.BeerDetail
-import com.microsoft.msftbreweryworkshop.api.model.DetailResponse
 import com.microsoft.msftbreweryworkshop.ext.app
 import com.microsoft.msftbreweryworkshop.ext.showToast
-import com.microsoft.msftbreweryworkshop.ext.toBeer
+import com.microsoft.msftbreweryworkshop.model.Beer
 import com.microsoft.msftbreweryworkshop.service.BeerService
-import com.microsoft.msftbreweryworkshop.service.ServiceListener
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_beer_detail.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class BeerDetailFragment : Fragment(),
-    ServiceListener<DetailResponse<BeerDetail>> {
+class BeerDetailFragment : Fragment() {
     private val beerService: BeerService? by lazy { activity?.app?.provideBeerService() }
 
     private val beerId: String
@@ -52,8 +52,7 @@ class BeerDetailFragment : Fragment(),
         loadDetail()
     }
 
-    override fun onSuccess(response: DetailResponse<BeerDetail>) {
-        val model = response.data.toBeer()
+    fun onLoadDetail(model: Beer) {
 
         activity?.title = model.name
 
@@ -88,12 +87,18 @@ class BeerDetailFragment : Fragment(),
             .into(image_medium)
     }
 
-    override fun onFailure(error: String) {
-        activity?.finish()
-        showToast(error)
-    }
-
     private fun loadDetail() {
-        beerService?.getBeer(beerId, this)
+        CoroutineScope(Dispatchers.Default).launch {
+            val result = beerService?.getBeer(beerId)?.await()
+
+            withContext(Dispatchers.Main) {
+                if (result != null) {
+                    onLoadDetail(result)
+                } else {
+                    activity?.finish()
+                    showToast("Detail failed to load")
+                }
+            }
+        }
     }
 }
