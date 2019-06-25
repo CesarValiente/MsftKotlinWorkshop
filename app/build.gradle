@@ -1,0 +1,68 @@
+apply plugin: 'com.android.application'
+
+//apply plugin: 'kotlin-android'
+//apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.microsoft.kotlinworkshop"
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        def API_URL = "API_URL"
+        def API_KEY = "API_KEY"
+
+        debug {
+            buildConfigField "String", API_URL, "\"https://sandbox-api.brewerydb.com/v2/\""
+            buildConfigField "String", API_KEY, "\"6adab143ba46ff94c44dd88f80aa0f39\""
+        }
+
+        release {
+            buildConfigField "String", API_URL, "https://sandbox-api.brewerydb.com/v2/"
+            buildConfigField "String", API_KEY, "6adab143ba46ff94c44dd88f80aa0f39"
+
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+//    androidExtensions {
+//        experimental = true
+//    }
+}
+
+dependencies {
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.core:core-ktx:1.2.0-alpha02'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+
+//    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.1.1'
+//    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    //retrofit dependencies
+    implementation "com.squareup.okhttp3:okhttp:3.12.1"
+    implementation "com.squareup.okhttp3:logging-interceptor:3.12.1"
+    implementation("com.squareup.retrofit2:retrofit:2.2.0") {
+        // exclude Retrofit’s OkHttp peer-dependency module and define your own module import
+        exclude module: 'okhttp'
+    }
+    implementation "com.squareup.retrofit2:converter-moshi:2.6.0"
+
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+    // timber
+    implementation "com.jakewharton.timber:timber:4.7.0"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}

@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Microsoft Brewery</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="beer_detail_name">Name: %1$s</string>
+    <string name="beer_detail_description">Description: %1$s</string>
+    <string name="beer_detail_website">Website: %1$s</string>
+    <string name="beer_detail_food">Food pairings: %1$s</string>
+    <string name="beer_detail_organic">Organic: %1$s</string>
+    <string name="beer_detail_status">Status: %1$s</string>
+    <string name="beer_detail_style">Style: %1$s</string>
+    <string name="beer_detail_abv">ABV: %1$s</string>
+    <string name="brewery_detail_name">Name: %1$s</string>
+    <string name="brewery_detail_description">Description: %1$s</string>
+    <string name="brewery_detail_organic">Organic: %1$s</string>
+    <string name="brewery_detail_status">Status: %1$s</string>
+    <string name="brewery_detail_create_date">Create date: %1$s</string>
+    <string name="beer">Beer</string>
+    <string name="brewery">Brewery</string>
+    <string name="detail">Detail</string>
+    <string name="organic">Organic</string>
+    <string name="active">Active</string>
+</resources>
